@@ -20,7 +20,7 @@ require "Slim/Log.php";
 
 require "notorm-master/notorm-master/NotORM.php";
  
-$pdo = new PDO("mysql:dbname=u693453499_dev", "u693453499_user", "minoro456");
+$pdo = new PDO("mysql:dbname=u693453499_dev", "u693453499_user", "");
 $db = new NotORM($pdo);
 
 // creamos una nueva instancia de Slim
