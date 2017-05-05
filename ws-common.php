@@ -18,6 +18,7 @@ $wsCommon->get("/getCustomUrlIkaro/:id", function ($id) use ($wsCommon, $db){
         case 1:
             echo json_encode(array(
             "status" => true,
+            "code" => 200,
             "url_custom" => "ikaroira.com",
             "message" => "Registro borrado exitosamente"
             ));
@@ -25,6 +26,7 @@ $wsCommon->get("/getCustomUrlIkaro/:id", function ($id) use ($wsCommon, $db){
         case 2:
             echo json_encode(array(
             "status" => true,
+            "code" => 200,
             "url_custom" => "www.ikaroira.com",
             "message" => "Registro borrado exitosamente"
             ));
@@ -32,6 +34,7 @@ $wsCommon->get("/getCustomUrlIkaro/:id", function ($id) use ($wsCommon, $db){
         case 3:
             echo json_encode(array(
             "status" => true,
+            "code" => 200,
             "url_custom" => "http://www.ikaroira.com",
             "message" => "Registro borrado exitosamente"
             ));
@@ -39,7 +42,9 @@ $wsCommon->get("/getCustomUrlIkaro/:id", function ($id) use ($wsCommon, $db){
         default:
         echo json_encode(array(
             "status" => false,
-            "message" => "El Registro con id $id no existe"
+            "error" => true,
+            "code" => 401,
+            "message" => "La URL solicitada No existe"
             ));
     }
 
