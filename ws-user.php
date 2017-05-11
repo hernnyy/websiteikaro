@@ -1,16 +1,16 @@
 <?php
 require "Slim/Slim.php";
-
+require "notorm-master/NotORM.php";
 use \Slim\Slim;
 
 Slim::registerAutoloader();
 
 // creamos una nueva instancia de Slim
 $wsUserCommon = new Slim();
+//carga de configuraciones
+$array_ini = parse_ini_file("config.ini");
 
-require "notorm-master/notorm-master/NotORM.php";
- 
-$pdo = new PDO("mysql:dbname=u693453499_turno", "u693453499_turno", "wa71miZOfo");
+$pdo = new PDO("mysql:dbname=u693453499_turno","u693453499_turno", $array_ini['dbpass']);
 $db = new NotORM($pdo);
 
 $wsUserCommon->get("/loginUser/:username/:password", function ($username,$password) use ($wsUserCommon, $db){    
