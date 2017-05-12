@@ -49,12 +49,12 @@ $wsUserCommon->get("/loginUser/:username/:password", function ($username,$passwo
 
 });
 
-$wsUserCommon->post("/insertUser", function (Request $request, Response $response) use ($wsUserCommon, $db){    
+$wsUserCommon->post("/insertUser", function () use ($wsUserCommon, $db){    
 
     $wsUserCommon->response()->header("Content-Type", "application/json");
-    $user = $request->getParsedBody();
+    $user = $wsUserCommon->request()->post();
     // $user = $wsUserCommon->request()->post();
-    echo json_encode($user);
+    // echo json_encode($user);
     $result = $db->emt_users()->insert($user);
     echo json_encode(array(
             "status" => true,
@@ -94,7 +94,7 @@ $wsUserCommon->get("/getByID/:id", function ($id) use ($wsUserCommon, $db){
     $users = $db->emt_users()->where("emt_user_id", $id);
     if ($user = $users->fetch()) {
         $jsonResponse []  = array(
-            "id" => $user["id_user"],
+            "id" => $user["emt_user_id"],
             "username" => $user["username"]
         );
 
