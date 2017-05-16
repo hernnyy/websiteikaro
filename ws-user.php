@@ -12,11 +12,12 @@ $array_ini = parse_ini_file("config.ini");
 
 $pdo = new PDO("mysql:dbname=u693453499_turno","u693453499_turno", $array_ini['dbpass']);
 $structure = new NotORM_Structure_Convention(
-    $primary = "emt_user_id", // id_$table
-    $foreign = "%s", // id_$table
+    $primary = "id_%s", // id_$table
+    $foreign = "fk_id_%s", // id_$table
     $table = "%s", // {$table}s
-    $prefix = "emt_" // wp_$table
+    $prefix = "" // wp_$table
 );
+// $structure = new NotORM_Structure_Discovery($pdo, $cache = null, $foreign = '%s');
 $db = new NotORM($pdo,$structure);
 
 $wsUserCommon->post("/loginUser", function () use ($wsUserCommon, $db){    
@@ -29,27 +30,25 @@ $wsUserCommon->post("/loginUser", function () use ($wsUserCommon, $db){
         "username" => $data["username"],
         "password" => $data["password"]
     );
-    $users = $db->users()->where($userToLogin);
+    $users = $db->emt_users()->where($userToLogin);
     if ($user = $users->fetch()) {
-        // $jsonResponse []  = array(
-        //     "id" => $user["id_user"],
-        //     "username" => $user["username"],
-        //     "firstname" => $user["firstname"],
-        //     "lastname" => $user["lastname"],
-        //     "birthday" => $user["birthday"],
-        //     "email" => $user["email"],
-        //     "telephone" => $user["telephone"],
-        //     "identication_type" => $user["identication_type"],
-        //     "identication_number" => $user["identication_number"],
-        //     "state" => $user["state"],
-        //     "activation_code" => $user["activation_code"]
-        // );
-        echo json_encode(array(
-            "data" => $user["email"],
+        $jsonResponse = array(
+            "id" => $user["id_emt_users"],
             "isValid" => true,
             "status" => true,
             "message" => "Usuario Valido"
-            ));
+            );
+        foreach ($user->emt_persons() as $person) {
+            $jsonResponse = array(
+            "name" => $person["first_name"],
+            "email" => $person->emt_contacts["email"],
+            "id" => $user["id_emt_users"],
+            "isValid" => true,
+            "status" => true,
+            "message" => "Usuario Valido"
+            );
+        }
+        echo json_encode($jsonResponse);
     }else{
         echo json_encode(array(
             "status" => false,
@@ -69,7 +68,7 @@ $wsUserCommon->post("/insertUser", function () use ($wsUserCommon, $db){
             "status" => true,
             "message" => "Registro guardado exitosamente",
             "error" => $result,
-            "id" => $result["id"]));
+            "id" => $result["id_emt_users"]));
 
 });
 
@@ -79,8 +78,8 @@ $wsUserCommon->get("/deleteUser/:id", function ($id) use ($wsUserCommon, $db){
     $unactivate = array(
         "active" => "0"
     );
-    $user = $db->users()->where("emt_user_id", $id)->fetch();
- if ($user !== false) {
+    $user = $db->emt_users[$id];
+ if ($user) {
         $result = $user->update($unactivate);
         if($result !== false && $result !== 0){
             echo json_encode(array(
@@ -106,12 +105,20 @@ $wsUserCommon->get("/getByID/:id", function ($id) use ($wsUserCommon, $db){
 
     $wsUserCommon->response()->header("Content-Type", "application/json");
     
-    $users = $db->users()->where("emt_user_id", $id);
-    if ($user = $users->fetch()) {
-        $jsonResponse []  = array(
-            "id" => $user["emt_user_id"],
+    $user = $db->emt_users[$id];
+    if ($user) {
+        $jsonResponse = array(
+            "id" => $user["id_emt_users"],
             "username" => $user["username"]
-        );
+            );
+        foreach ($user->emt_persons() as $person) {
+            $jsonResponse = array(
+            "name" => $person["first_name"],
+            "email" => $person->emt_contacts["email"],
+            "id" => $user["id_emt_users"],
+            "username" => $user["username"]
+            );
+        }
 
         echo json_encode($jsonResponse);
     }else{
@@ -129,9 +136,9 @@ $wsUserCommon->get("/getAll", function () use ($wsUserCommon, $db){
     $wsUserCommon->response()->header("Content-Type", "application/json");
     
     $jsonResponse = array();
-    foreach ($db->users()->where("active", "1") as $user) {
+    foreach ($db->emt_users()->where("active", "1") as $user) {
         $jsonResponse []  = array(
-            "id" => $user["emt_user_id"],
+            "id" => $user["id_emt_users"],
             "username" => $user["username"]
             // "firstname" => $user["firstname"],
             // "lastname" => $user["lastname"],
