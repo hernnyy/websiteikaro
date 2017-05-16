@@ -10,7 +10,7 @@ $wsUserCommon = new Slim();
 //carga de configuraciones
 $array_ini = parse_ini_file("config.ini");
 
-$pdo = new PDO("mysql:dbname=u693453499_turno","u693453499_turno", $array_ini['dbpass']);
+$pdo = new PDO($array_ini['dbname'],$array_ini['dbuser'], $array_ini['dbpass']);
 $structure = new NotORM_Structure_Convention(
     $primary = "id_%s", // id_$table
     $foreign = "fk_id_%s", // id_$table
