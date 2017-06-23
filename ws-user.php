@@ -20,7 +20,7 @@ $structure = new NotORM_Structure_Convention(
 // $structure = new NotORM_Structure_Discovery($pdo, $cache = null, $foreign = '%s');
 $db = new NotORM($pdo,$structure);
 
-$wsUserCommon->post("/loginUser", function () use ($wsUserCommon, $db){    
+$wsUserCommon->post("/login", function () use ($wsUserCommon, $db){    
 
     $wsUserCommon->response()->header("Content-Type", "application/json");
     
@@ -58,7 +58,7 @@ $wsUserCommon->post("/loginUser", function () use ($wsUserCommon, $db){
 
 });
 
-$wsUserCommon->post("/insertUser", function () use ($wsUserCommon, $db){    
+$wsUserCommon->post("/insert", function () use ($wsUserCommon, $db){    
 
     $wsUserCommon->response()->header("Content-Type", "application/json");
     //username=testpost&password=testa
@@ -72,7 +72,7 @@ $wsUserCommon->post("/insertUser", function () use ($wsUserCommon, $db){
 
 });
 
-$wsUserCommon->get("/deleteUser/:id", function ($id) use ($wsUserCommon, $db){    
+$wsUserCommon->get("/delete/:id", function ($id) use ($wsUserCommon, $db){    
 
     $wsUserCommon->response()->header("Content-Type", "application/json");
     $unactivate = array(
