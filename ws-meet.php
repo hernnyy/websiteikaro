@@ -63,7 +63,7 @@ $wsMeetCommon->post("/insert", function () use ($wsMeetCommon, $db){
     $wsMeetCommon->response()->header("Content-Type", "application/json");
     //username=testpost&password=testa
     $meet = $wsMeetCommon->request()->post();
-    $result = $db->emt_meets()->insert($user);
+    $result = $db->emt_meets()->insert($meet);
     echo json_encode(array(
             "status" => true,
             "message" => "Registro guardado exitosamente",
@@ -161,6 +161,55 @@ $wsMeetCommon->get("/getAll", function () use ($wsMeetCommon, $db){
     }
 
     echo json_encode($jsonResponse);
+
+});
+
+$wsMeetCommon->get("/getByCustomerID/:id", function ($id) use ($wsMeetCommon, $db){
+
+    $wsMeetCommon->response()->header("Content-Type", "application/json");
+    $clausulaCustomMeet = array(
+        "active" => "0",
+        "fk_id_emt_customers" => $id
+    );
+    $meet = $db->emt_meets()->where($clausulaCustomMeet);
+    if ($meet) {
+        $provider = $db->emt_providers[$meet->emt_providers["id_emt_providers"]];
+        foreach ($provider->emt_users() as $prov) {
+            $provname = $prov["username"];
+        }
+
+        $customer = $db->emt_customers[$meet->emt_customers["id_emt_customers"]];
+        foreach ($customer->emt_users() as $cust) {
+            $custname = $cust["username"];
+        }
+        $meetplace = $db->emt_meetplaces[$meet->emt_meetplaces["id_emt_meetplaces"]];
+        $codepais = $meetplace->emt_address["country_code"];
+        
+        $jsonResponse = array(
+            "id" => $meet["id_emt_meets"],
+            "fecha" => $meet["date"],
+            "proveedor" => $meet->emt_providers["id_emt_providers"],
+            "provname" => $provname,
+            "custname" => $custname,
+            "lugar" => $meet->emt_meetplaces["fantasy_name"],
+            "codigoPais" => $codepais
+            );
+        // foreach ($meet->emt_persons() as $person) {
+        //     $jsonResponse = array(
+        //     "name" => $person["first_name"],
+        //     "email" => $person->emt_contacts["email"],
+        //     "id" => $meet["id_emt_users"],
+        //     "username" => $meet["username"]
+        //     );
+        // }
+
+        echo json_encode($jsonResponse);
+    }else{
+        echo json_encode(array(
+            "status" => false,
+            "message" => "No existe un registro con el id $id "
+            ));
+    }
 
 });
  
