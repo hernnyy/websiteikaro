@@ -164,6 +164,7 @@ $wsMeetCommon->get("/getAll", function () use ($wsMeetCommon, $db){
 
 });
 
+
 $wsMeetCommon->get("/getByCustomerID/:id", function ($id) use ($wsMeetCommon, $db){
 
     $wsMeetCommon->response()->header("Content-Type", "application/json");
@@ -210,6 +211,45 @@ $wsMeetCommon->get("/getByCustomerID/:id", function ($id) use ($wsMeetCommon, $d
             "message" => "No existe un registro con el id $id "
             ));
     }
+
+});
+$wsMeetCommon->get("/getAllMeetByUser/:id", function ($id) use ($wsMeetCommon, $db){
+
+    $wsMeetCommon->response()->header("Content-Type", "application/json");
+
+    $user = $db->emt_users[$id];
+    $meetByUserC = array(
+        "active" => "1",
+        "fk_id_emt_customers" => $user->emt_customers["id_emt_customers"]
+    );
+    $meetByUserP = array(
+        "active" => "1",
+        "fk_id_emt_providers" => $user->emt_providers["id_emt_providers"]
+    );
+    // $customer = $db->emt_customers[$meet->emt_customers["id_emt_customers"]];
+    //     foreach ($customer->emt_users() as $cust) {
+    //         $custname = $cust["username"];
+    //     }
+    $jsonCustomers = array();
+    foreach ($db->emt_meets()->where($meetByUserC) as $meet) {
+        $jsonCustomers []  = array(
+            "id" => $meet["id_emt_meets"],
+            "fecha" => $meet["date"]
+        );
+    }
+    $jsonProviders = array();
+    foreach ($db->emt_meets()->where($meetByUserP) as $meet) {
+        $jsonProviders []  = array(
+            "id" => $meet["id_emt_meets"],
+            "fecha" => $meet["date"]
+        );
+    }
+    $jsonResponse = array();
+    $jsonResponse [] = array(
+            "custom" => $jsonCustomers,
+            "provider" => $jsonProviders
+        );
+    echo json_encode($jsonResponse);
 
 });
  
