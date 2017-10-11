@@ -164,6 +164,34 @@ $wsMeetCommon->get("/getAll", function () use ($wsMeetCommon, $db){
 
 });
 
+$wsMeetCommon->get("/cancel/:id", function ($id) use ($wsMeetCommon, $db){    
+
+    $wsMeetCommon->response()->header("Content-Type", "application/json");
+    $cancelQuery = array(
+        "status" => "cancel"
+    );
+    $meet = $db->emt_meets[$id];
+ if ($meet) {
+        $result = $meet->update($cancelQuery);
+        if($result !== false && $result !== 0){
+            echo json_encode(array(
+            "status" => true,
+            "message" => "Registro Cancelado, con el id $id "
+            ));
+        }else{
+            echo json_encode(array(
+            "status" => false,
+            "message" => "registro no cancelado o ya estaba cancelado"
+            ));
+        }
+    }else{
+        echo json_encode(array(
+            "status" => false,
+            "message" => "No existe un registro con el id $id "
+            ));
+    }
+
+});
 
 $wsMeetCommon->get("/getByCustomerID/:id", function ($id) use ($wsMeetCommon, $db){
 
@@ -213,7 +241,9 @@ $wsMeetCommon->get("/getByCustomerID/:id", function ($id) use ($wsMeetCommon, $d
     }
 
 });
-$wsMeetCommon->get("/getAllMeetByUser/:id", function ($id) use ($wsMeetCommon, $db){
+
+// WS para traer todos los turnos de un usuario sea prov o cust
+$wsMeetCommon->get("/getAllByUser/:id", function ($id) use ($wsMeetCommon, $db){
 
     $wsMeetCommon->response()->header("Content-Type", "application/json");
 
