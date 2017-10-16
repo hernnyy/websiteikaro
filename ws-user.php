@@ -52,6 +52,7 @@ $wsUserCommon->post("/loginUser", function () use ($wsUserCommon, $db){
     }else{
         echo json_encode(array(
             "status" => false,
+            "data" => $data,
             "message" => "No existe un Usuario $username "
             ));
     }
