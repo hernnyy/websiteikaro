@@ -275,7 +275,7 @@ $wsMeetCommon->get("/getAllByUser/:id", function ($id) use ($wsMeetCommon, $db){
         );
     }
     $jsonResponse = array();
-    $jsonResponse [] = array(
+    $jsonResponse = array(
             "custom" => $jsonCustomers,
             "provider" => $jsonProviders
         );
