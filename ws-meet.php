@@ -282,6 +282,26 @@ $wsMeetCommon->get("/getAllByUser/:id", function ($id) use ($wsMeetCommon, $db){
     echo json_encode($jsonResponse);
 
 });
+
+// WS para traer todos los turnos de un usuario prov
+$wsMeetCommon->post("/search", function () use ($wsMeetCommon, $db){
+
+    $wsMeetCommon->response()->header("Content-Type", "application/json");
+    //id=testpost&date=testa
+    $params = $wsMeetCommon->request()->post();
+    $user = $db->emt_users[$params["id"]];
+
+    $jsonProviders = array();
+    foreach ($db->emt_meets()->where("active = ? AND fk_id_emt_providers = ? AND DATE_FORMAT(date, '%Y-%m-%d') > DATE_FORMAT(?, '%Y-%m-%d')", "1", $user->emt_providers["id_emt_providers"], "'"+$params["date"]+"'")->order("fecha DESC") as $meet) {
+        $jsonProviders []  = array(
+            "id" => $meet["id_emt_meets"],
+            "fecha" => $meet["date"]
+        );
+    }
+    $jsonResponse = $jsonProviders;
+    echo json_encode($jsonResponse);
+
+});
  
 // corremos la aplicación
 $wsMeetCommon->run();
