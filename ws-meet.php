@@ -292,12 +292,18 @@ $wsMeetCommon->post("/search", function () use ($wsMeetCommon, $db){
     $user = $db->emt_users[$params["id"]];
 
     $jsonProviders = array();
-    foreach ($db->emt_meets()->where("active = ? AND fk_id_emt_providers = ? AND DATE_FORMAT(date, '%Y-%m-%d') > DATE_FORMAT(?, '%Y-%m-%d')", "1", $user->emt_providers["id_emt_providers"], "'"+$params["date"]+"'")->order("fecha DESC") as $meet) {
+    foreach ($db->emt_meets()->where("active = ? AND fk_id_emt_providers = ? AND DATE_FORMAT(date, '%Y-%m-%d') > DATE_FORMAT(?, '%Y-%m-%d')", "1", $user->emt_providers["id_emt_providers"], $params["date"])->order("date DESC") as $meet) {
         $jsonProviders []  = array(
             "id" => $meet["id_emt_meets"],
             "fecha" => $meet["date"]
         );
     }
+     $jsonProviders []  = array(
+            "id" => $params["id"],
+            "fecha" => $params["date"],
+            "uaer" => $user,
+            "parse" => $user->emt_providers["id_emt_providers"]
+        );
     $jsonResponse = $jsonProviders;
     echo json_encode($jsonResponse);
 
