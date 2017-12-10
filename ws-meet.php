@@ -287,7 +287,7 @@ $wsMeetCommon->get("/getAllByUser/:id", function ($id) use ($wsMeetCommon, $db){
 $wsMeetCommon->post("/search", function () use ($wsMeetCommon, $db){
 
     $wsMeetCommon->response()->header("Content-Type", "application/json");
-    //id=testpost&date=testa
+    //id=1&date=2017/11/01
     $params = $wsMeetCommon->request()->post();
     $user = $db->emt_users[$params["id"]];
 
@@ -298,12 +298,6 @@ $wsMeetCommon->post("/search", function () use ($wsMeetCommon, $db){
             "fecha" => $meet["date"]
         );
     }
-     $jsonProviders []  = array(
-            "id" => $params["id"],
-            "fecha" => $params["date"],
-            "uaer" => $user,
-            "parse" => $user->emt_providers["id_emt_providers"]
-        );
     $jsonResponse = $jsonProviders;
     echo json_encode($jsonResponse);
 
