@@ -156,6 +156,31 @@ $wsUserCommon->get("/getAll", function () use ($wsUserCommon, $db){
     echo json_encode($jsonResponse);
 
 });
+
+$wsUserCommon->get("/getAllProv/:id", function ($id) use ($wsUserCommon, $db){
+
+    $wsUserCommon->response()->header("Content-Type", "application/json");
+    
+    $jsonResponse = array();
+    foreach ($db->emt_users()->where("active = ? AND fk_id_emt_providers <> ? AND fk_id_emt_providers IS NOT NULL", "1", $id) as $user) {
+        $jsonResponse []  = array(
+            "id" => $user["id_emt_users"],
+            "username" => $user["username"]
+            // "firstname" => $user["firstname"],
+            // "lastname" => $user["lastname"],
+            // "birthday" => $user["birthday"],
+            // "email" => $user["email"],
+            // "telephone" => $user["telephone"],
+            // "identication_type" => $user["identication_type"],
+            // "identication_number" => $user["identication_number"],
+            // "state" => $user["state"],
+            // "activation_code" => $user["activation_code"]
+        );
+    }
+
+    echo json_encode($jsonResponse);
+
+});
  
 // corremos la aplicación
 $wsUserCommon->run();
