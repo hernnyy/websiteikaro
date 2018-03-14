@@ -20,44 +20,6 @@ $structure = new NotORM_Structure_Convention(
 // $structure = new NotORM_Structure_Discovery($pdo, $cache = null, $foreign = '%s');
 $db = new NotORM($pdo,$structure);
 
-// $wsMeetCommon->post("/login", function () use ($wsMeetCommon, $db){    
-
-//     $wsMeetCommon->response()->header("Content-Type", "application/json");
-    
-//     $data = $wsMeetCommon->request()->post();
-//     $userToLogin = array(
-//         "active" => "1",
-//         "username" => $data["username"],
-//         "password" => $data["password"]
-//     );
-//     $users = $db->emt_users()->where($userToLogin);
-//     if ($user = $users->fetch()) {
-//         $jsonResponse = array(
-//             "id" => $user["id_emt_users"],
-//             "isValid" => true,
-//             "status" => true,
-//             "message" => "Usuario Valido"
-//             );
-//         foreach ($user->emt_persons() as $person) {
-//             $jsonResponse = array(
-//             "name" => $person["first_name"],
-//             "email" => $person->emt_contacts["email"],
-//             "id" => $user["id_emt_users"],
-//             "isValid" => true,
-//             "status" => true,
-//             "message" => "Usuario Valido"
-//             );
-//         }
-//         echo json_encode($jsonResponse);
-//     }else{
-//         echo json_encode(array(
-//             "status" => false,
-//             "message" => "No existe un Usuario $username "
-//             ));
-//     }
-
-// });
-
 $wsMeetCommon->post("/insert", function () use ($wsMeetCommon, $db){    
 
     $wsMeetCommon->response()->header("Content-Type", "application/json");
