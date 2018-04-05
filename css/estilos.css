@@ -464,3 +464,15 @@ footer p a{
 #carouselExampleIndicators{
     width: 100%;
 }
+.logotitulo{
+    display:flex;
+}
+.logotitulo .title{
+    padding-left: 8px;
+}
+.logo{
+    height:42px;
+    width=42px;
+    -webkit-border-radius: 11px 11px;  /* Safari  */
+    -moz-border-radius: 11px 11px;
+}
