@@ -119,6 +119,12 @@ h1{
     margin-bottom: 40px;
     color: #fff;
 }
+section table p{
+    font: normal 18px 'Open Sans', sans-serif;
+    margin-bottom: 20px;
+    text-align: justify;
+    color: #fff;
+}
 header nav{
     display: flex;
 }
