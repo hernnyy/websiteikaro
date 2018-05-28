@@ -34,6 +34,8 @@ $wsUserCommon->post("/login", function () use ($wsUserCommon, $db){
     if ($user = $users->fetch()) {
         $jsonResponse = array(
             "id" => $user["id_emt_users"],
+            "idCustomer" => $user->emt_customers["id_emt_customers"],
+            "idProvider" => $user->emt_providers["id_emt_providers"],
             "isValid" => true,
             "status" => true,
             "message" => "Usuario Valido"
@@ -191,8 +193,9 @@ $wsUserCommon->get("/getAllCust/:id", function ($id) use ($wsUserCommon, $db){
     $jsonResponse = array();
     foreach ($db->emt_users()->where("active = ? AND fk_id_emt_customers <> ? AND fk_id_emt_customers IS NOT NULL", "1", $id) as $user) {
         $jsonResponse []  = array(
-            "id" => $user["id_emt_users"],
-            "username" => $user["username"]
+            "idUser" => $user["id_emt_users"],
+            "username" => $user["username"],
+            "idCustomer" => $user->emt_customers["id_emt_customers"]
             // "firstname" => $user["firstname"],
             // "lastname" => $user["lastname"],
             // "birthday" => $user["birthday"],
@@ -216,8 +219,9 @@ $wsUserCommon->get("/getAllProv/:id", function ($id) use ($wsUserCommon, $db){
     $jsonResponse = array();
     foreach ($db->emt_users()->where("active = ? AND fk_id_emt_providers <> ? AND fk_id_emt_providers IS NOT NULL", "1", $id) as $user) {
         $jsonResponse []  = array(
-            "id" => $user["id_emt_users"],
-            "username" => $user["username"]
+            "idUser" => $user["id_emt_users"],
+            "username" => $user["username"],
+            "idProvider" => $user->emt_providers["id_emt_providers"]
             // "firstname" => $user["firstname"],
             // "lastname" => $user["lastname"],
             // "birthday" => $user["birthday"],
