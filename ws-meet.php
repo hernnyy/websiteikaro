@@ -245,7 +245,7 @@ $wsMeetCommon->get("/getAllByUser/:id", function ($id) use ($wsMeetCommon, $db){
 
 });
 
-// WS para traer todos los turnos de un usuario prov
+// WS para traer todos los turnos asignados a un usuario prov, para ver su disponibilidad
 $wsMeetCommon->post("/search", function () use ($wsMeetCommon, $db){
 
     $wsMeetCommon->response()->header("Content-Type", "application/json");
@@ -255,6 +255,26 @@ $wsMeetCommon->post("/search", function () use ($wsMeetCommon, $db){
 
     $jsonProviders = array();
     foreach ($db->emt_meets()->where("active = ? AND fk_id_emt_providers = ? AND DATE_FORMAT(date, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d')", "1", $user->emt_providers["id_emt_providers"], $params["date"])->order("date DESC") as $meet) {
+        $jsonProviders []  = array(
+            "id" => $meet["id_emt_meets"],
+            "fecha" => $meet["date"]
+        );
+    }
+    $jsonResponse = $jsonProviders;
+    echo json_encode($jsonResponse);
+
+});
+
+// WS para traer todos los turnos asignados a un usuario customer, para ver sus turnos asignados
+$wsMeetCommon->post("/search2", function () use ($wsMeetCommon, $db){
+
+    $wsMeetCommon->response()->header("Content-Type", "application/json");
+    //id=1&date=2017/11/01
+    $params = $wsMeetCommon->request()->post();
+    $user = $db->emt_users[$params["id"]];
+
+    $jsonProviders = array();
+    foreach ($db->emt_meets()->where("active = ? AND fk_id_emt_providers = ? AND DATE_FORMAT(date, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(date, '%Y-%m-%d') <= DATE_FORMAT(DATE_ADD(?, INTERVAL 3 DAY ), '%Y-%m-%d')", "1", $user->emt_providers["id_emt_providers"], $params["date"])->order("date DESC") as $meet) {
         $jsonProviders []  = array(
             "id" => $meet["id_emt_meets"],
             "fecha" => $meet["date"]
