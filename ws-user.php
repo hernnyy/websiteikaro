@@ -166,6 +166,7 @@ class UtilUser
     public static function parseUserDTO($user) {
         foreach ($user->emt_persons() as $person) {
             $jsonPerson = array(
+            "id" => $person["id_emt_persons"],
             "first_name" => $person["first_name"],
             "last_name" => $person["last_name"],
             "document_number" => $person["document_number"],
