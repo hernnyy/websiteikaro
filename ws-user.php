@@ -1,6 +1,8 @@
 <?php
 require "Slim/Slim.php";
 require "notorm-master/NotORM.php";
+include 'UtilUser.php';
+include 'UtilMeetPlace.php';
 use \Slim\Slim;
 
 Slim::registerAutoloader();
@@ -122,7 +124,7 @@ $wsUserCommon->get("/getAllPlaces", function () use ($wsUserCommon, $db){
     
     $jsonResponse = array();
     foreach ($db->emt_meetplaces()->where("active", "1") as $meetplace) {
-        $jsonResponse []  = UtilUser::parsePlaceDTO($meetplace);
+        $jsonResponse []  = UtilMeetPlace::parsePlaceDTO($meetplace);
     }
 
     echo json_encode($jsonResponse);
@@ -157,78 +159,3 @@ $wsUserCommon->get("/getAllProv/:id", function ($id) use ($wsUserCommon, $db){
  
 // corremos la aplicación
 $wsUserCommon->run();
-
-class UtilUser
-{
-    // Declaración de una propiedad
-    public $var = 'un valor predeterminado';
-
-    public static function parseUserDTO($user) {
-        foreach ($user->emt_persons() as $person) {
-            $jsonPerson = array(
-            "id" => $person["id_emt_persons"],
-            "first_name" => $person["first_name"],
-            "last_name" => $person["last_name"],
-            "document_number" => $person["document_number"],
-            "document_type" => $person["document_type"],
-            "contact" => array(
-                "id" => $person->emt_contacts["id_emt_contacts"],
-                "email" => $person->emt_contacts["email"],
-                "email2" => $person->emt_contacts["email2"],
-                "cellphone" => $person->emt_contacts["cellphone"],
-                "cellphone2" => $person->emt_contacts["cellphone2"]
-                )
-            );
-        }
-        $jsonResponse = array(
-            "id" => $user["id_emt_users"],
-            "username" => $user["username"],
-            "customer" => array(
-                "id" => $user->emt_customers["id_emt_customers"],
-                "dots" => $user->emt_customers["dots"]
-                ),
-            "provider" => array(
-                "id" => $user->emt_providers["id_emt_providers"],
-                "dots" => $user->emt_providers["dots"]
-                ),
-            "person" => $jsonPerson,
-            "isValid" => true,
-            "status" => true,
-            "message" => "User OK"
-            );
-        return $jsonResponse;
-    }
-
-    public static function parsePlaceDTO($place) {
-        foreach ($place->emt_contacts() as $contact) {
-            $jsonContact = array(
-                "id" => $contact["id_emt_contacts"],
-                "email" => $contact["email"],
-                "email2" => $contact["email2"],
-                "cellphone" => $contact["cellphone"],
-                "cellphone2" => $contact["cellphone2"]
-            );
-        }
-        $jsonResponse = array(
-            "id" => $place["id_emt_meetplaces"],
-            "fantasy_name" => $place["fantasy_name"],
-            "status" => $place["status"],
-            "name" => $place["name"],
-            "addres" => array(
-                "id" => $place->emt_address["id_emt_address"],
-                "country_code" => $place->emt_address["country_code"],
-                "country" => $place->emt_address["country"],
-                "street_name" => $place->emt_address["street_name"],
-                "street_number" => $place->emt_address["street_number"],
-                "postal_code" => $place->emt_address["postal_code"],
-                "locality" => $place->emt_address["locality"],
-                "region" => $place->emt_address["region"]
-                ),
-            "contact" => $jsonContact,
-            "isValid" => true,
-            "status" => true,
-            "message" => "Place OK"
-            );
-        return $jsonResponse;
-    }
-}

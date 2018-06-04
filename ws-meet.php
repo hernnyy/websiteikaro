@@ -1,6 +1,7 @@
 <?php
 require "Slim/Slim.php";
 require "notorm-master/NotORM.php";
+include 'UtilMeet.php';
 use \Slim\Slim;
 
 Slim::registerAutoloader();
@@ -70,36 +71,10 @@ $wsMeetCommon->get("/getByID/:id", function ($id) use ($wsMeetCommon, $db){
     $meet = $db->emt_meets[$id];
     if ($meet) {
     	$provider = $db->emt_providers[$meet->emt_providers["id_emt_providers"]];
-        foreach ($provider->emt_users() as $prov) {
-            $provname = $prov["username"];
-        }
-
     	$customer = $db->emt_customers[$meet->emt_customers["id_emt_customers"]];
-        foreach ($customer->emt_users() as $cust) {
-            $custname = $cust["username"];
-        }
         $meetplace = $db->emt_meetplaces[$meet->emt_meetplaces["id_emt_meetplaces"]];
-        $codepais = $meetplace->emt_address["country_code"];
-        
-        $jsonResponse = array(
-            "id" => $meet["id_emt_meets"],
-            "fecha" => $meet["date"],
-            "proveedor" => $meet->emt_providers["id_emt_providers"],
-            "provname" => $provname,
-            "custname" => $custname,
-            "lugar" => $meet->emt_meetplaces["fantasy_name"],
-            "codigoPais" => $codepais
-            );
-        // foreach ($meet->emt_persons() as $person) {
-        //     $jsonResponse = array(
-        //     "name" => $person["first_name"],
-        //     "email" => $person->emt_contacts["email"],
-        //     "id" => $meet["id_emt_users"],
-        //     "username" => $meet["username"]
-        //     );
-        // }
 
-        echo json_encode($jsonResponse);
+        echo json_encode(UtilMeet::parseMeetDTO($meet, $provider, $customer, $meetplace));
     }else{
         echo json_encode(array(
             "status" => false,
@@ -116,10 +91,12 @@ $wsMeetCommon->get("/getAll", function () use ($wsMeetCommon, $db){
     
     $jsonResponse = array();
     foreach ($db->emt_meets()->where("active", "1") as $meet) {
-        $jsonResponse []  = array(
-            "id" => $meet["id_emt_meets"],
-            "fecha" => $meet["date"]
-        );
+
+        $provider = $db->emt_providers[$meet->emt_providers["id_emt_providers"]];
+        $customer = $db->emt_customers[$meet->emt_customers["id_emt_customers"]];
+        $meetplace = $db->emt_meetplaces[$meet->emt_meetplaces["id_emt_meetplaces"]];
+
+        $jsonResponse []  = UtilMeet::parseMeetDTO($meet, $provider, $customer, $meetplace);
     }
 
     echo json_encode($jsonResponse);
@@ -162,45 +139,17 @@ $wsMeetCommon->get("/getByCustomerID/:id", function ($id) use ($wsMeetCommon, $d
         "active" => "0",
         "fk_id_emt_customers" => $id
     );
-    $meet = $db->emt_meets()->where($clausulaCustomMeet);
-    if ($meet) {
+    $jsonResponse = array();
+    foreach ($db->emt_meets()->where($clausulaCustomMeet) as $meet) {
+
         $provider = $db->emt_providers[$meet->emt_providers["id_emt_providers"]];
-        foreach ($provider->emt_users() as $prov) {
-            $provname = $prov["username"];
-        }
-
         $customer = $db->emt_customers[$meet->emt_customers["id_emt_customers"]];
-        foreach ($customer->emt_users() as $cust) {
-            $custname = $cust["username"];
-        }
         $meetplace = $db->emt_meetplaces[$meet->emt_meetplaces["id_emt_meetplaces"]];
-        $codepais = $meetplace->emt_address["country_code"];
-        
-        $jsonResponse = array(
-            "id" => $meet["id_emt_meets"],
-            "fecha" => $meet["date"],
-            "proveedor" => $meet->emt_providers["id_emt_providers"],
-            "provname" => $provname,
-            "custname" => $custname,
-            "lugar" => $meet->emt_meetplaces["fantasy_name"],
-            "codigoPais" => $codepais
-            );
-        // foreach ($meet->emt_persons() as $person) {
-        //     $jsonResponse = array(
-        //     "name" => $person["first_name"],
-        //     "email" => $person->emt_contacts["email"],
-        //     "id" => $meet["id_emt_users"],
-        //     "username" => $meet["username"]
-        //     );
-        // }
 
-        echo json_encode($jsonResponse);
-    }else{
-        echo json_encode(array(
-            "status" => false,
-            "message" => "No existe un registro con el id $id "
-            ));
+        $jsonResponse []  = UtilMeet::parseMeetDTO($meet, $provider, $customer, $meetplace);
     }
+
+    echo json_encode($jsonResponse);
 
 });
 
@@ -218,23 +167,22 @@ $wsMeetCommon->get("/getAllByUser/:id", function ($id) use ($wsMeetCommon, $db){
         "active" => "1",
         "fk_id_emt_providers" => $user->emt_providers["id_emt_providers"]
     );
-    // $customer = $db->emt_customers[$meet->emt_customers["id_emt_customers"]];
-    //     foreach ($customer->emt_users() as $cust) {
-    //         $custname = $cust["username"];
-    //     }
+
     $jsonCustomers = array();
     foreach ($db->emt_meets()->where($meetByUserC) as $meet) {
-        $jsonCustomers []  = array(
-            "id" => $meet["id_emt_meets"],
-            "fecha" => $meet["date"]
-        );
+        $provider = $db->emt_providers[$meet->emt_providers["id_emt_providers"]];
+        $customer = $db->emt_customers[$meet->emt_customers["id_emt_customers"]];
+        $meetplace = $db->emt_meetplaces[$meet->emt_meetplaces["id_emt_meetplaces"]];
+
+        $jsonCustomers []  = UtilMeet::parseMeetDTO($meet, $provider, $customer, $meetplace);
     }
     $jsonProviders = array();
     foreach ($db->emt_meets()->where($meetByUserP) as $meet) {
-        $jsonProviders []  = array(
-            "id" => $meet["id_emt_meets"],
-            "fecha" => $meet["date"]
-        );
+        $provider = $db->emt_providers[$meet->emt_providers["id_emt_providers"]];
+        $customer = $db->emt_customers[$meet->emt_customers["id_emt_customers"]];
+        $meetplace = $db->emt_meetplaces[$meet->emt_meetplaces["id_emt_meetplaces"]];
+
+        $jsonProviders []  = UtilMeet::parseMeetDTO($meet, $provider, $customer, $meetplace);
     }
     $jsonResponse = array();
     $jsonResponse = array(
@@ -274,7 +222,7 @@ $wsMeetCommon->post("/search2", function () use ($wsMeetCommon, $db){
     $user = $db->emt_users[$params["id"]];
 
     $jsonProviders = array();
-    foreach ($db->emt_meets()->where("active = ? AND fk_id_emt_providers = ? AND DATE_FORMAT(date, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(date, '%Y-%m-%d') <= DATE_FORMAT(DATE_ADD(?, INTERVAL 3 DAY ), '%Y-%m-%d')", "1", $user->emt_providers["id_emt_providers"], $params["date"])->order("date DESC") as $meet) {
+    foreach ($db->emt_meets()->where("active = ? AND fk_id_emt_providers = ? AND DATE_FORMAT(date, '%Y-%m-%d') >= DATE_FORMAT(?, '%Y-%m-%d') AND DATE_FORMAT(date, '%Y-%m-%d') <= DATE_FORMAT(DATE_ADD(?, INTERVAL 3 DAY ), '%Y-%m-%d')", "1", $user->emt_providers["id_emt_providers"], $params["date"], $params["date"])->order("date DESC") as $meet) {
         $jsonProviders []  = array(
             "id" => $meet["id_emt_meets"],
             "fecha" => $meet["date"]
