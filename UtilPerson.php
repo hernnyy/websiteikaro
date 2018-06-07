@@ -2,7 +2,6 @@
 include 'UtilContact.php';
 class UtilPerson
 {
-
     public static function parsePersonDTO($person) {
         if ($person) {
             $json = array(
@@ -11,13 +10,7 @@ class UtilPerson
             "last_name" => $person["last_name"],
             "document_number" => $person["document_number"],
             "document_type" => $person["document_type"],
-            "contact" => array(
-                "id" => $person->emt_contacts["id_emt_contacts"],
-                "email" => $person->emt_contacts["email"],
-                "email2" => $person->emt_contacts["email2"],
-                "cellphone" => $person->emt_contacts["cellphone"],
-                "cellphone2" => $person->emt_contacts["cellphone2"]
-                )
+            "contact" => UtilContact::parseContactDTO($person)
             );
         }
         return $json;
